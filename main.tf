@@ -4,6 +4,7 @@ provider "aws" {
 
 resource "aws_s3_bucket" "example" {
   bucket = "my-tf-example-bucket-999"
+   acl    = "private"
 }
 
 resource "aws_s3_bucket_ownership_controls" "example" {
