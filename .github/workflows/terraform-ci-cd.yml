@@ -30,4 +30,4 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Terraform Apply
-      run: terraform apply -var "aws_credentials=$AWS_CREDENTIALS" --auto-approve
+      run: terraform apply --auto-approve
