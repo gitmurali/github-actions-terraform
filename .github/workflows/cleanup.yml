@@ -1,0 +1,40 @@
+name: Terraform Cleanup
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *' # Runs every day at midnight, adjust as needed
+
+jobs:
+  terraform-cleanup:
+    name: 'Post Apply Cleanup'
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: 'us-east-1'
+      TF_VERSION: '1.4.0'
+
+    steps:
+    - name: 'Checkout GitHub repository'
+      uses: actions/checkout@v2
+
+    - name: 'Configure AWS credentials'
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: 'Set up Terraform'
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: 'Terraform Init'
+      run: terraform init
+
+    - name: 'Terraform Plan Destroy'
+      run: terraform plan -destroy -out=tfplan-destroy
+
+    - name: 'Terraform Apply Destroy'
+      run: terraform apply -auto-approve tfplan-destroy
