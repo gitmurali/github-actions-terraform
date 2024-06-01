@@ -1,0 +1,73 @@
+name: Terraform CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    name: 'Terraform Lint, Security Check, and Deploy'
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: 'us-east-1'
+      TF_VERSION: '1.4.0'
+      TFLINT_VERSION: '0.46.1'  # Updated to a more recent version
+      TFSEC_VERSION: '1.28.1'   # Updated to a more recent version
+
+    steps:
+    - name: 'Checkout GitHub repository'
+      uses: actions/checkout@v2
+
+    - name: 'Configure AWS credentials'
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: 'Set up Terraform'
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: 'Install TFLint'
+      run: |
+        curl -sLo tflint.zip https://github.com/terraform-linters/tflint/releases/download/v${{ env.TFLINT_VERSION }}/tflint_linux_amd64.zip
+        unzip tflint.zip -d /usr/local/bin/
+        tflint --version
+
+    - name: 'Install tfsec'
+      run: |
+        curl -sLo tfsec https://github.com/aquasecurity/tfsec/releases/download/v${{ env.TFSEC_VERSION }}/tfsec-linux-amd64
+        chmod +x tfsec
+        mv tfsec /usr/local/bin/
+        tfsec --version
+
+    - name: 'Terraform Init'
+      run: terraform init
+
+    - name: 'Terraform Format'
+      run: terraform fmt
+
+    - name: 'Terraform Validate'
+      run: terraform validate
+
+    - name: 'TFLint'
+      run: |
+        tflint --init
+        tflint
+
+    - name: 'tfsec'
+      run: tfsec .
+
+    - name: 'Terraform Plan'
+      run: terraform plan -out=tfplan
+
+    - name: 'Terraform Apply'
+      if: github.ref == 'refs/heads/main'
+      run: terraform apply -auto-approve tfplan
