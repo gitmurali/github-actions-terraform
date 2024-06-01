@@ -1,0 +1,33 @@
+name: AWS S3 Bucket CI/CD
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  terraform-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Run TFSec
+      run: tfsec --config-file tfsec.yml
+
+    - name: Run TFLint
+      run: tflint
+
+    - name: Terraform Plan
+      run: terraform plan
+
+  terraform-cd:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Terraform Apply
+      run: terraform apply -var "aws_credentials=$AWS_CREDENTIALS" --auto-approve
