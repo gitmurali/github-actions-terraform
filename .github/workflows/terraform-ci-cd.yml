@@ -72,6 +72,6 @@ jobs:
       if: github.ref == 'refs/heads/main'
       run: terraform apply -auto-approve tfplan
 
-    - name: 'Post Apply Cleanup'
-      if: github.ref == 'refs/heads/main'
-      run: terraform plan -destroy -out=tfplan-destroy && terraform apply -auto-approve tfplan-destroy
+    # - name: 'Post Apply Cleanup'
+    #   if: github.ref == 'refs/heads/main'
+    #   run: terraform plan -destroy -out=tfplan-destroy && terraform apply -auto-approve tfplan-destroy
