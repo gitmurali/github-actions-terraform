@@ -6,10 +6,6 @@ resource "aws_s3_bucket" "example" {
   bucket = "my-tf-example-bucket-999"
 }
 
-resource "aws_s3_bucket" "log_bucket" {
-  bucket = "my-tf-log-bucket"
-}
-
 resource "aws_s3_bucket_ownership_controls" "example" {
   bucket = aws_s3_bucket.example.id
   rule {
@@ -54,13 +50,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
       sse_algorithm     = "aws:kms"
     }
   }
-}
-
-resource "aws_s3_bucket_logging" "example" {
-  bucket = aws_s3_bucket.example.id
-
-  target_bucket = aws_s3_bucket.log_bucket.id
-  target_prefix = "log/"
 }
 
 terraform {
