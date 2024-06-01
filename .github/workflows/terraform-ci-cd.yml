@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@master
       - name: tfsec
         uses: aquasecurity/tfsec-action@v1.0.0
-        
+
   terraform-ci:
     runs-on: ubuntu-latest
     needs: tfsec
@@ -26,9 +26,6 @@ jobs:
     
     - name: Terraform init
       run: terraform init
-  
-    - name: Run TFSec
-      run: tfsec --config-file tfsec.yml
 
     - name: Run TFLint
       run: tflint
