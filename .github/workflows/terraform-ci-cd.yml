@@ -7,8 +7,15 @@ on:
 
 jobs:
   tfsec:
-    uses: ./.github/workflows/tfsec.yml
+    name: tfsec
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@master
+      - name: tfsec
+        uses: aquasecurity/tfsec-action@v1.0.0
+        
   terraform-ci:
     runs-on: ubuntu-latest
     needs: tfsec
@@ -32,7 +39,7 @@ jobs:
   terraform-cd:
     runs-on: ubuntu-latest
     needs: terraform-ci
-    
+
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
