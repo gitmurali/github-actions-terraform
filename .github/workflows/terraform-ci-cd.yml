@@ -14,9 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: 'us-east-1'
+      AWS_REGION: 'us-west-2'
       TF_VERSION: '1.4.0'
       TFLINT_VERSION: '0.46.1'  # Updated to a more recent version
       TFSEC_VERSION: '1.28.1'   # Updated to a more recent version
@@ -24,6 +22,13 @@ jobs:
     steps:
     - name: 'Checkout GitHub repository'
       uses: actions/checkout@v2
+
+    - name: 'Configure AWS credentials'
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
 
     - name: 'Set up Terraform'
       uses: hashicorp/setup-terraform@v1
@@ -47,7 +52,7 @@ jobs:
       run: terraform init
 
     - name: 'Terraform Format'
-      run: terraform fmt
+      run: terraform fmt -check
 
     - name: 'Terraform Validate'
       run: terraform validate
