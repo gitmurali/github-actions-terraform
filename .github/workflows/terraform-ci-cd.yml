@@ -12,7 +12,10 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
-
+    
+    - name: Terraform init
+      run: terraform init
+  
     - name: Run TFSec
       run: tfsec --config-file tfsec.yml
 
@@ -28,6 +31,6 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
-
+    
     - name: Terraform Apply
       run: terraform apply --auto-approve
