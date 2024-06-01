@@ -24,15 +24,14 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
     
-    - name: Terraform init
+    - name: Run TFLint
       uses: terraform-linters/setup-tflint@v4
       with:
         tflint_version: latest
-        run: terraform init
-        
-
-    - name: Run TFLint
-      run: tflint
+        run: tflint
+    
+    - name: Terraform init
+      run: terraform init
 
     - name: Terraform Plan
       run: terraform plan
